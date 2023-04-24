@@ -1,12 +1,12 @@
 import os
 from logging import config as logging_config
-
+from dotenv import load_dotenv
 from pydantic import BaseSettings, PostgresDsn
 
 from core.logger import LOGGING
 
-
 logging_config.dictConfig(LOGGING)
+load_dotenv(".env")
 
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "URL Shortener App")
