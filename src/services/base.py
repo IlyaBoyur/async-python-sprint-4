@@ -52,7 +52,7 @@ class RepositoryDB(
         return results.scalars().all()
 
     async def create(
-        self, db: AsyncSession, *, object_in: CreateSchemaType
+        self, db: AsyncSession, *, object_in: CreateSchemaType | dict[str, Any]
     ) -> ModelType:
         object_in_data = jsonable_encoder(object_in)
         db_object = self._model(**object_in_data)
