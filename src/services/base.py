@@ -79,7 +79,7 @@ class RepositoryDB(
 
     async def delete(self, db: AsyncSession, *, id: int) -> None:
         db_object = db.get(entity=self._model, ident=id)
-        db.delete(db_object)
+        await db.delete(db_object)
         await db.commit()
 
     async def count(self, db: AsyncSession) -> int:
@@ -88,5 +88,5 @@ class RepositoryDB(
             .with_only_columns([func.count()])
             .order_by(None)
         )
-        result = await self.session.execute(statement=statement)
+        result = await db.execute(statement=statement)
         return result.scalar()
