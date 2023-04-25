@@ -3,16 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, HttpUrl
 
 
-class ShortenedURLBase(BaseModel):
-    url: HttpUrl
-
-
-class ShortenedURLCreate(ShortenedURLBase):
-    pass
-
-
-# Properties shared by models stored in DB
-class ShortenedURLInDBBase(BaseModel):
+class ShortenedURLInDB(BaseModel):
     id: int
     value: HttpUrl
     original: HttpUrl
@@ -23,5 +14,9 @@ class ShortenedURLInDBBase(BaseModel):
         orm_mode = True
 
 
-class ShortenedURL(ShortenedURLInDBBase):
+class ShortenedURLRead(ShortenedURLInDB):
     pass
+
+
+class ShortenedURLCreate(BaseModel):
+    url: HttpUrl
