@@ -9,7 +9,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from db.db import Base
-from models.models import Client, ShortenedURL, ShortenedURLUse, User
+from models.models import ShortenedURL, ShortenedURLUse, User
 
 load_dotenv(".env")
 

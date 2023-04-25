@@ -14,28 +14,12 @@ class User(Base):
         DateTime, index=True, default=func.now(), nullable=False
     )
 
-    clients = relationship(
-        "Client", back_populates="user", cascade="all, delete"
+    short_url_uses = relationship(
+        "ShortenedURLUse", back_populates="user", cascade="all, delete"
     )
 
     def __repr__(self):
         return f"User(id={self.id}, {self.username})"
-
-
-class Client(Base):
-    __tablename__ = "db_client"
-    id = Column(Integer, primary_key=True)
-    host = Column(String(100), nullable=False)
-    user_agent = Column(String(1000), nullable=False)
-    user_id = Column(ForeignKey("db_user.id"), nullable=True)
-
-    user = relationship("User", back_populates="clients")
-    short_url_uses = relationship(
-        "ShortenedURLUse", back_populates="client", cascade="all, delete"
-    )
-
-    def __repr__(self):
-        return f"Client(id={self.id}, host={self.host})"
 
 
 class ShortenedURL(Base):
@@ -62,11 +46,17 @@ class ShortenedURLUse(Base):
     created_at = Column(
         DateTime, index=True, default=func.now(), nullable=False
     )
+    host = Column(String(100), nullable=False)
+    port = Column(Integer, nullable=False)
+    user_agent = Column(String(1000), nullable=False)
     url_id = Column(ForeignKey("db_shortened_url.id"), nullable=False)
-    client_id = Column(ForeignKey("db_client.id"), nullable=False)
+    user_id = Column(ForeignKey("db_user.id"), nullable=True)
 
     url = relationship("ShortenedURL", back_populates="uses")
-    client = relationship("Client", back_populates="short_url_uses")
+    user = relationship("User", back_populates="short_url_uses")
 
     def __repr__(self):
-        return f"ShortenedURLUse(url={self.url_id}, client={self.client_id})"
+        return (
+            f"ShortenedURLUse(peer={self.host}:{self.port},"
+            f" url={self.url_id}, user={self.user_id})"
+        )
