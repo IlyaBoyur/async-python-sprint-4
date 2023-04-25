@@ -10,6 +10,8 @@ logging_config.dictConfig(LOGGING)
 load_dotenv(".env")
 
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 PROJECT_NAME = os.getenv("PROJECT_NAME", "URL Shortener App")
 PROJECT_HOST = os.getenv("PROJECT_HOST", "127.0.0.1")
 PROJECT_PORT = int(os.getenv("PROJECT_PORT", "8080"))
@@ -17,7 +19,7 @@ PROJECT_DB = os.getenv(
     "PROJECT_DB",
     "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres",
 )
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_SHORTENER = os.getenv("PROJECT_SHORTENER", "clckru")
 
 
 class AppSettings(BaseSettings):
