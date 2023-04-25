@@ -50,5 +50,16 @@ async def create_short_url(
         "value": url_in.url,
         "original": generate_short_url(url_in.url),
     }
-    url = await short_url_service.create(db=db, object_in=data)
-    return url
+    url_exists = (
+        len(
+            await short_url_service.get_multi(db, filter={"value": url_in.url})
+        )
+        > 0
+    )
+    if url_exists:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="URL already exists",
+        )
+    url_object = await short_url_service.create(db=db, object_in=data)
+    return short_url_schema.ShortenedURL.from_orm(url_object)
