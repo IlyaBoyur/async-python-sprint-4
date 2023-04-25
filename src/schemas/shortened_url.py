@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, conint
 
 
 class ShortenedURLInDB(BaseModel):
-    id: int
+    id: conint(ge=0)
     value: HttpUrl
     original: HttpUrl
     created_at: datetime

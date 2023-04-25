@@ -1,14 +1,17 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, SecretStr, conint
 
 
-class UserRead(BaseModel):
-    id: int
+class UserInDB(BaseModel):
+    id: conint(ge=0)
     username: str
+    password: SecretStr = Field(exclude=True)
     created_at: datetime
 
+    class Config:
+        orm_mode = True
 
-class UserCreate(BaseModel):
-    username: str
-    password: str
+
+class UserRead(UserInDB):
+    pass

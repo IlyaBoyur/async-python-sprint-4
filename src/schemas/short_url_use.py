@@ -1,24 +1,32 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, conint
 
-from .client import ClientRead
-from .shortened_url import ShortenedURLRead
+from .user import UserRead
 
 
-class ShortURLUseRead(BaseModel):
+class ShortURLUseReadCut(BaseModel):
+    count: conint(ge=0)
+
+
+class ShortURLUseInDB(BaseModel):
+    id: conint(ge=0)
     created_at: datetime
-    url: ShortenedURLRead
-    client: ClientRead
+    host: str
+    port: conint(ge=0)
+    user_agent: str
+    url_id: conint(ge=0)
+    user_id: conint(ge=0) | None
 
     class Config:
         orm_mode = True
 
 
-class ShortURLUseReadCut(BaseModel):
-    count: int
+class ShortURLUseCreate(ShortURLUseInDB):
+    id: None = None
+    created_at: None = None
 
 
-class ShortURLUseCreate(BaseModel):
-    url_id: int
-    client_id: int
+class ShortURLUseRead(ShortURLUseInDB):
+    user_id: None = None
+    user: UserRead | None
