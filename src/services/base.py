@@ -43,7 +43,7 @@ class RepositoryDB(
         return results.scalar_one_or_none()
 
     async def get_multi(
-        self, db: AsyncSession, *, filter=dict[str, Any], skip=0, limit=100
+        self, db: AsyncSession, *, filter: dict[str, Any], skip=0, limit=100
     ) -> list[ModelType]:
         statement = (
             select(self._model).filter_by(**filter).offset(skip).limit(limit)
