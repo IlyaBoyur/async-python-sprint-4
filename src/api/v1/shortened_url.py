@@ -18,7 +18,7 @@ async def read_short_url(
     *,
     db: AsyncSession = Depends(get_session),
     id: int,
-) -> Any:
+) -> Response:
     """Get URL by ID"""
     url_object = await short_url_service.get(db=db, id=id)
     if url_object is None:
@@ -34,27 +34,24 @@ async def read_short_url(
     )
 
 
-@router.post(
-    "/",
-    response_model=short_url_schema.ShortenedURLRead,
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_short_url(
     *,
     db: AsyncSession = Depends(get_session),
     url_in: short_url_schema.ShortenedURLCreate,
-) -> Any:
+) -> short_url_schema.ShortenedURLRead:
     """Create new short URL"""
-    print(url_in.url)
-    data = {
-        "value": url_in.url,
-        "original": generate_short_url(url_in.url),
-    }
-    urls = await short_url_service.get_multi(db, filter={"value": url_in.url})
-    if len(urls) > 0:
+    urls_count = await short_url_service.count(
+        db, filter={"value": url_in.url}
+    )
+    if urls_count > 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="URL already exists",
         )
+    data = {
+        "value": url_in.url,
+        "original": generate_short_url(url_in.url),
+    }
     url_object = await short_url_service.create(db=db, object_in=data)
     return short_url_schema.ShortenedURLRead.from_orm(url_object)
