@@ -36,7 +36,7 @@ async def read_short_url(
 
 @router.post(
     "/",
-    response_model=short_url_schema.ShortenedURL,
+    response_model=short_url_schema.ShortenedURLRead,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_short_url(
@@ -57,4 +57,4 @@ async def create_short_url(
             detail="URL already exists",
         )
     url_object = await short_url_service.create(db=db, object_in=data)
-    return short_url_schema.ShortenedURL.from_orm(url_object)
+    return short_url_schema.ShortenedURLRead.from_orm(url_object)
