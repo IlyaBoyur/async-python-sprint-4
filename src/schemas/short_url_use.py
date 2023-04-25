@@ -28,5 +28,4 @@ class ShortURLUseCreate(ShortURLUseInDB):
 
 
 class ShortURLUseRead(ShortURLUseInDB):
-    user_id: None = None
-    user: UserRead | None
+    pass
