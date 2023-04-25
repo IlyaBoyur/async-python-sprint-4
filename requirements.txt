@@ -7,3 +7,5 @@ uvloop==0.17.0
 SQLAlchemy==2.0.10
 asyncpg==0.27.0
 alembic==1.10.3
+# Helper Libs
+pyshorteners==1.0.1
