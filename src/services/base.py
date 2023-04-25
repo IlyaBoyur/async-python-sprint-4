@@ -66,7 +66,7 @@ class RepositoryDB(
         db: AsyncSession,
         *,
         db_object: ModelType,
-        object_in: UpdateSchemaType | dict[str, Any]
+        object_in: UpdateSchemaType | dict[str, Any],
     ) -> ModelType:
         obj_in_data = jsonable_encoder(object_in)
         obj_in_data.pop("id")
@@ -84,10 +84,11 @@ class RepositoryDB(
         await db.delete(db_object)
         await db.commit()
 
-    async def count(self, db: AsyncSession) -> int:
+    async def count(self, db: AsyncSession, *, filter=dict[str, Any]) -> int:
         statement = (
             select(self._model)
-            .with_only_columns([func.count()])
+            .filter_by(**filter)
+            .with_only_columns(*[func.count()])
             .order_by(None)
         )
         result = await db.execute(statement=statement)
