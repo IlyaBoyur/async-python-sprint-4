@@ -1,10 +1,12 @@
 from typing import Any, Generic, Type, TypeVar
-from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
-from db.db import Base
+
 from fastapi.encoders import jsonable_encoder
+from pydantic import BaseModel
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import func
+
+from db.db import Base
 
 
 class Repository:
