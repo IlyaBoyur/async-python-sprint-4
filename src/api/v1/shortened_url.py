@@ -17,7 +17,11 @@ from schemas.short_url_use import (
     ShortURLUseRead,
     ShortURLUseReadCut,
 )
-from schemas.shortened_url import ShortenedURLCreate, ShortenedURLRead
+from schemas.shortened_url import (
+    ShortenedURLCreate,
+    ShortenedURLRead,
+    ShortenedURLUpdate,
+)
 from schemas.user import UserRead
 from services.services import short_url_service, url_use_service
 from services.shortener import generate_short_url
@@ -80,6 +84,8 @@ async def read_short_url(
     use: ShortURLUseRead = Depends(log_url_use),
 ) -> Response:
     """Get URL by ID & log use"""
+    if short_url.deleted:
+        return Response(status_code=status.HTTP_410_GONE)
     logger.info(f"Redirecting to: {short_url.original}")
     headers = {"Location": short_url.original}
     return Response(
@@ -87,6 +93,20 @@ async def read_short_url(
         status_code=status.HTTP_307_TEMPORARY_REDIRECT,
         headers=headers,
     )
+
+
+@router.delete("/{id}")
+async def mark_deleted_short_url(
+    *,
+    db: AsyncSession = Depends(get_session),
+    short_url: ShortenedURLRead = Depends(get_short_url),
+) -> Response:
+    """Get URL by ID & mark deleted"""
+    await short_url_service.update(
+        db=db, db_object=short_url, object_in=ShortenedURLUpdate(deleted=True)
+    )
+    logger.info(f"Mark {short_url.value} ({short_url.original}) as deleted")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/{id}/status")
