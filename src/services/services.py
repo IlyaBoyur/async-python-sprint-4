@@ -1,13 +1,13 @@
 from models.models import ShortenedURL as ShortenedURLModel
 from models.models import ShortenedURLUse as ShortenedURLUseModel
 from schemas.short_url_use import ShortURLUseCreate
-from schemas.shortened_url import ShortenedURLCreate
+from schemas.shortened_url import ShortenedURLCreate, ShortenedURLUpdate
 
 from .base import RepositoryDB
 
 
 class RepositoryShortenedURL(
-    RepositoryDB[ShortenedURLModel, ShortenedURLCreate, None]
+    RepositoryDB[ShortenedURLModel, ShortenedURLCreate, ShortenedURLUpdate]
 ):
     pass
 
