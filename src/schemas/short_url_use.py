@@ -22,9 +22,12 @@ class ShortURLUseInDB(BaseModel):
         orm_mode = True
 
 
-class ShortURLUseCreate(ShortURLUseInDB):
-    id: None = None
-    created_at: None = None
+class ShortURLUseCreate(BaseModel):
+    host: str
+    port: conint(ge=0)
+    user_agent: str
+    url_id: conint(ge=0)
+    user_id: conint(ge=0) | None
 
 
 class ShortURLUseRead(ShortURLUseInDB):
