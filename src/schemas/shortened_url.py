@@ -18,5 +18,9 @@ class ShortenedURLRead(ShortenedURLInDB):
     pass
 
 
+class ShortenedURLUpdate(BaseModel):
+    deleted: bool
+
+
 class ShortenedURLCreate(BaseModel):
     url: HttpUrl
