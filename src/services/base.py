@@ -1,12 +1,15 @@
+import logging
 from typing import Any, Generic, Type, TypeVar
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import func
+from sqlalchemy.sql import functions
 
 from db.db import Base
+
+logger = logging.getLogger(__name__)
 
 
 class Repository:
@@ -88,8 +91,18 @@ class RepositoryDB(
         statement = (
             select(self._model)
             .filter_by(**filter)
-            .with_only_columns(*[func.count()])
+            .with_only_columns(*[functions.count()])
             .order_by(None)
         )
         result = await db.execute(statement=statement)
         return result.scalar()
+
+    async def get_current_time(self, db: AsyncSession) -> str:
+        statement = select(functions.now())
+        print(statement)
+        try:
+            result = await db.execute(statement=statement)
+            return result.scalar()
+        except ConnectionRefusedError as error:
+            logger.error(error)
+            return ""
