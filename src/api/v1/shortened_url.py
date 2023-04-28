@@ -12,12 +12,12 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.db import get_session
-from schemas import shortened_url as short_url_schema
 from schemas.short_url_use import (
     ShortURLUseCreate,
     ShortURLUseRead,
     ShortURLUseReadCut,
 )
+from schemas.shortened_url import ShortenedURLCreate, ShortenedURLRead
 from schemas.user import UserRead
 from services.services import short_url_service, url_use_service
 from services.shortener import generate_short_url
@@ -40,7 +40,7 @@ async def get_short_url(
     *,
     db: AsyncSession = Depends(get_session),
     id: int,
-) -> short_url_schema.ShortenedURLRead:
+) -> ShortenedURLRead:
     url_object = await short_url_service.get(db=db, id=id)
     if url_object is None:
         raise HTTPException(
@@ -56,7 +56,7 @@ async def log_url_use(
     port: int = Depends(port_extractor),
     user_agent: str | None = Header(default=None),
     user: UserRead | None = Depends(get_user),
-    short_url: short_url_schema.ShortenedURLRead = Depends(get_short_url),
+    short_url: ShortenedURLRead = Depends(get_short_url),
 ) -> ShortURLUseRead:
     url_use_data = ShortURLUseCreate.parse_obj(
         {
@@ -76,7 +76,7 @@ async def log_url_use(
 @router.get("/{id}")
 async def read_short_url(
     *,
-    short_url: short_url_schema.ShortenedURLRead = Depends(get_short_url),
+    short_url: ShortenedURLRead = Depends(get_short_url),
     use: ShortURLUseRead = Depends(log_url_use),
 ) -> Response:
     """Get URL by ID & log use"""
@@ -114,8 +114,8 @@ async def read_short_url_statistics(
 async def create_short_url(
     *,
     db: AsyncSession = Depends(get_session),
-    url_in: short_url_schema.ShortenedURLCreate,
-) -> short_url_schema.ShortenedURLRead:
+    url_in: ShortenedURLCreate,
+) -> ShortenedURLRead:
     """Create new short URL"""
     urls_count = await short_url_service.count(
         db, filter={"value": url_in.url}
@@ -130,4 +130,4 @@ async def create_short_url(
         "original": generate_short_url(url_in.url),
     }
     url_object = await short_url_service.create(db=db, object_in=data)
-    return short_url_schema.ShortenedURLRead.from_orm(url_object)
+    return ShortenedURLRead.from_orm(url_object)
