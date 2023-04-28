@@ -72,13 +72,14 @@ class RepositoryDB(
         object_in: UpdateSchemaType | dict[str, Any],
     ) -> ModelType:
         obj_in_data = jsonable_encoder(object_in)
-        obj_in_data.pop("id")
+        obj_in_data.pop("id", None)
         statement = (
             update(self._model)
-            .where(self._model.id == db_object.id)
+            .filter_by(id=db_object.id)
             .values(**obj_in_data)
         )
         await db.execute(statement=statement)
+        await db.commit()
         await db.refresh(db_object)
         return db_object
 
