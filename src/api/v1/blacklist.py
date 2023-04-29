@@ -16,11 +16,7 @@ async def blacklist(
     *, db: AsyncSession = Depends(get_session), client: BlacklistedClientCreate
 ) -> BlacklistedClientRead:
     """Blacklist host"""
-    from models.models import BlacklistedClient
-
-    db_object = BlacklistedClient(**client.dict())
-    db.add(db_object)
-    await db.commit()
+    db_object = await blacklist_service.create(db=db, object_in=client)
     logger.info(
         "Host %s blacklisted until %s",
         db_object.host,
