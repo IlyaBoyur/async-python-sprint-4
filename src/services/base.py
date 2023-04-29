@@ -46,8 +46,14 @@ class RepositoryDB(
         return results.scalar_one_or_none()
 
     async def get_multi(
-        self, db: AsyncSession, *, filter: dict[str, Any], skip=0, limit=100
+        self,
+        db: AsyncSession,
+        *,
+        filter: dict[str, Any] = None,
+        skip: int = 0,
+        limit: int = 100,
     ) -> list[ModelType]:
+        filter = filter or {}
         statement = (
             select(self._model).filter_by(**filter).offset(skip).limit(limit)
         )
@@ -88,7 +94,10 @@ class RepositoryDB(
         await db.execute(statement=statement)
         await db.commit()
 
-    async def count(self, db: AsyncSession, *, filter=dict[str, Any]) -> int:
+    async def count(
+        self, db: AsyncSession, *, filter: dict[str, Any] = None
+    ) -> int:
+        filter = filter or {}
         statement = (
             select(self._model)
             .filter_by(**filter)
