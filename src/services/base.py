@@ -3,7 +3,7 @@ from typing import Any, Generic, Type, TypeVar
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import functions
 
@@ -84,8 +84,8 @@ class RepositoryDB(
         return db_object
 
     async def delete(self, db: AsyncSession, *, id: int) -> None:
-        db_object = db.get(entity=self._model, ident=id)
-        await db.delete(db_object)
+        statement = delete(self._model).where(self._model.id == id)
+        await db.execute(statement=statement)
         await db.commit()
 
     async def count(self, db: AsyncSession, *, filter=dict[str, Any]) -> int:
