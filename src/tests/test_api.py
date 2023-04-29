@@ -10,6 +10,7 @@ from .factories import BlacklistClientFactory, testing_session
 pytestmark = pytest.mark.anyio
 
 BLACKLIST_LIST_URL = "/api/v1/blacklist"
+PING_URL = "/api/v1/ping"
 
 
 class TestBlacklistAPIs:
@@ -61,3 +62,14 @@ class TestBlacklistAPIs:
         async with testing_session() as db:
             ips = await blacklist_service.get_multi(db=db)
         assert to_be_deleted_ip_id not in [ip.id for ip in ips]
+
+
+class TestDbAPIs:
+    async def test_ping(self, api_client):
+        response = await api_client.get(PING_URL)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert (
+            "Connection established. Database time:"
+            in response.json()["message"]
+        )
