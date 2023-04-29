@@ -1,6 +1,7 @@
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import func
+from sqlalchemy_utils import IPAddressType
 
 from db.db import Base
 
@@ -60,3 +61,13 @@ class ShortenedURLUse(Base):
             f"ShortenedURLUse(peer={self.host}:{self.port},"
             f" url={self.url_id}, user={self.user_id})"
         )
+
+
+class BlacklistedClient(Base):
+    __tablename__ = "db_blacklisted_client"
+    id = Column(Integer, primary_key=True)
+    host = Column(IPAddressType)
+    until = Column(DateTime, index=True, default=None, nullable=True)
+
+    def __repr__(self):
+        return f"BlacklistedClient({self.host})"
