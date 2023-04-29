@@ -24,3 +24,8 @@ class ShortenedURLUpdate(BaseModel):
 
 class ShortenedURLCreate(BaseModel):
     original_url: HttpUrl
+
+
+class ShortenedURLBatchRead(BaseModel):
+    short_id: conint(ge=0)
+    short_url: HttpUrl
