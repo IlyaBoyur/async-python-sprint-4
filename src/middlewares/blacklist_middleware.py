@@ -2,7 +2,6 @@ import logging
 
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from db.db import get_session

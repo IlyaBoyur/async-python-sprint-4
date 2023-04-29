@@ -2,8 +2,6 @@ from datetime import datetime
 
 from pydantic import BaseModel, conint
 
-from .user import UserRead
-
 
 class ShortURLUseReadCut(BaseModel):
     count: conint(ge=0)
