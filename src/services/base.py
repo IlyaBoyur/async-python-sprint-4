@@ -126,7 +126,6 @@ class RepositoryDB(
 
     async def get_current_time(self, db: AsyncSession) -> str:
         statement = select(functions.now())
-        print(statement)
         try:
             result = await db.execute(statement=statement)
             return result.scalar()

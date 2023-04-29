@@ -18,7 +18,6 @@ async def blacklist(
     """Blacklist host"""
     from models.models import BlacklistedClient
 
-    print(client.dict())
     db_object = BlacklistedClient(**client.dict())
     db.add(db_object)
     await db.commit()
@@ -36,7 +35,6 @@ async def show_blacklist(
 ) -> list[BlacklistedClientRead]:
     """Show blacklist"""
     clients = await blacklist_service.get_multi(db=db)
-    print(f"clients: {clients}")
     return clients
 
 
