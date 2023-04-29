@@ -7,3 +7,6 @@ __pycache__/
 # Environment
 venv/
 .env
+
+# Test DB
+./test.db
