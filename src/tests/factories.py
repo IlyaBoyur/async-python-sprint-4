@@ -25,12 +25,24 @@ class AsyncModelFactory(factory.alchemy.SQLAlchemyModelFactory):
 
 
 class ShortenedURLFactory(AsyncModelFactory):
+    value = factory.LazyAttribute(
+        lambda obj: f"{obj.original}not-really-shortened/"
+    )
+    original = factory.Faker("url")
+    created_at = factory.Faker("date_time")
+    deleted = False
+
     class Meta:
         model = ShortenedURL
         sqlalchemy_session = testing_session
 
 
 class ShortenedURLUseFactory(AsyncModelFactory):
+    host = factory.Faker("ipv4")
+    port = factory.Faker("random_int", min=0, max=9999)
+    user_agent = factory.Faker("word")
+    url_id = factory.SubFactory(ShortenedURLFactory)
+
     class Meta:
         model = ShortenedURLUse
         sqlalchemy_session = testing_session
