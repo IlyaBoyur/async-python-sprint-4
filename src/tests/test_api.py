@@ -10,6 +10,7 @@ from .factories import BlacklistClientFactory, testing_session
 pytestmark = pytest.mark.anyio
 
 BLACKLIST_LIST_URL = "/api/v1/blacklist"
+BLACKLIST_DETAIL_URL = "/api/v1/blacklist/{id}"
 PING_URL = "/api/v1/ping"
 
 
@@ -52,9 +53,10 @@ class TestBlacklistAPIs:
 
     async def test_unblacklist(self, api_client, create_blacklist):
         to_be_deleted_ip_id = create_blacklist[0].id
-        BLACKLIST_DETAIL_URL = f"{BLACKLIST_LIST_URL}/{to_be_deleted_ip_id}"
 
-        response = await api_client.delete(BLACKLIST_DETAIL_URL)
+        response = await api_client.delete(
+            BLACKLIST_DETAIL_URL.format(id=to_be_deleted_ip_id)
+        )
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.content == b""
