@@ -3,7 +3,7 @@ from typing import Any, Generic, Type, TypeVar
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import functions
 
@@ -69,6 +69,23 @@ class RepositoryDB(
         await db.commit()
         await db.refresh(db_object)
         return db_object
+
+    async def bulk_create(
+        self,
+        db: AsyncSession,
+        objects_in: list[CreateSchemaType] | list[dict[str, Any]],
+    ) -> list[ModelType]:
+        """
+        Batched INSERT statements via the ORM in "bulk",
+        returning new model objects
+        """
+        statement = insert(self._model).returning(self._model)
+        results = await db.scalars(
+            statement=statement,
+            params=[{**dict(object_in)} for object_in in objects_in],
+        )
+        await db.commit()
+        return results.all()
 
     async def update(
         self,
