@@ -134,7 +134,7 @@ async def mark_deleted_short_url(
 
 
 @router.get("/{id}/status")
-async def read_short_url_statistics(
+async def read_short_url_use_history(
     *,
     db: AsyncSession = Depends(get_session),
     id: int,
@@ -142,7 +142,7 @@ async def read_short_url_statistics(
     offset: int = 0,
     max_result: int = 10,
 ) -> list[ShortURLUseRead] | ShortURLUseReadCut:
-    """Get URL statistics by ID"""
+    """Get URL use history by ID"""
     if not full_info:
         url_uses_count = await url_use_service.count(
             db, filter=dict(url_id=id)
@@ -169,8 +169,8 @@ async def create_short_url(
             detail="URL already exists",
         )
     data = {
-        "value": original,
-        "original": generate_short_url(original),
+        "value": generate_short_url(original),
+        "original": original,
     }
     url_object = await short_url_service.create(db=db, object_in=data)
     return ShortenedURLRead.from_orm(url_object)
