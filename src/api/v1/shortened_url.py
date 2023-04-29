@@ -137,17 +137,16 @@ async def create_short_url(
     url_in: ShortenedURLCreate,
 ) -> ShortenedURLRead:
     """Create new short URL"""
-    urls_count = await short_url_service.count(
-        db, filter={"value": url_in.url}
-    )
+    original = url_in.original_url
+    urls_count = await short_url_service.count(db, filter={"value": original})
     if urls_count > 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="URL already exists",
         )
     data = {
-        "value": url_in.url,
-        "original": generate_short_url(url_in.url),
+        "value": original,
+        "original": generate_short_url(original),
     }
     url_object = await short_url_service.create(db=db, object_in=data)
     return ShortenedURLRead.from_orm(url_object)
