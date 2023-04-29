@@ -10,3 +10,10 @@ asyncpg==0.27.0
 alembic==1.10.3
 # Helper Libs
 pyshorteners==1.0.1
+# Testing
+pytest== 7.3.1
+pytest-mock==3.10.0
+httpx==0.24.0
+aiosqlite==0.19.0
+anyio==3.6.2
+factory_boy==3.2.1
