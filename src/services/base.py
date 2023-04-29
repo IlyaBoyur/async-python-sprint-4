@@ -1,7 +1,6 @@
 import logging
 from typing import Any, Generic, Type, TypeVar
 
-from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -63,8 +62,7 @@ class RepositoryDB(
     async def create(
         self, db: AsyncSession, *, object_in: CreateSchemaType | dict[str, Any]
     ) -> ModelType:
-        object_in_data = jsonable_encoder(object_in)
-        db_object = self._model(**object_in_data)
+        db_object = self._model(**dict(object_in))
         db.add(db_object)
         await db.commit()
         await db.refresh(db_object)
@@ -94,7 +92,7 @@ class RepositoryDB(
         db_object: ModelType,
         object_in: UpdateSchemaType | dict[str, Any],
     ) -> ModelType:
-        obj_in_data = jsonable_encoder(object_in)
+        obj_in_data = dict(object_in)
         obj_in_data.pop("id", None)
         statement = (
             update(self._model)
