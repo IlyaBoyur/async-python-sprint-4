@@ -23,4 +23,4 @@ class ShortenedURLUpdate(BaseModel):
 
 
 class ShortenedURLCreate(BaseModel):
-    url: HttpUrl
+    original_url: HttpUrl
