@@ -18,6 +18,7 @@ from schemas.short_url_use import (
     ShortURLUseReadCut,
 )
 from schemas.shortened_url import (
+    ShortenedURLBatchRead,
     ShortenedURLCreate,
     ShortenedURLRead,
     ShortenedURLUpdate,
@@ -75,6 +76,29 @@ async def log_url_use(
     use = ShortURLUseRead.from_orm(db_object)
     logger.info(f"Logged URL use: {use}")
     return use
+
+
+@router.post("/shorten")
+async def batch_create_short_url(
+    *,
+    db: AsyncSession = Depends(get_session),
+    urls_in: list[ShortenedURLCreate],
+) -> list[ShortenedURLBatchRead]:
+    objects_in = [
+        {
+            "value": generate_short_url(url.original_url),
+            "original": url.original_url,
+        }
+        for url in urls_in
+    ]
+    db_objects = await short_url_service.bulk_create(
+        db=db, objects_in=objects_in
+    )
+    urls_out = [
+        ShortenedURLBatchRead(short_id=obj.id, short_url=obj.value)
+        for obj in db_objects
+    ]
+    return urls_out
 
 
 @router.get("/{id}")
