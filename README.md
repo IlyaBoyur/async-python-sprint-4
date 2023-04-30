@@ -102,3 +102,52 @@ GET /<shorten-url-id>/status?[full-info]&[max-result=10]&[offset=0]
 4. Приведите стиль кода в соответствие pep8, flake8, mypy.
 5. Логируйте результаты действий.
 6. Покройте написанный код тестами.
+
+## Локальный запуск приложения  (в корне проекта)
+
+### 1. Заполнить файл переменных среды .env (см. ниже)
+### 2. Поднять контейнер с базой данных
+```shell
+$ docker run --rm --name postgres-fastapi -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=collection -d postgres:14.5 
+
+```
+
+### 3. Подготовить локальное окружение
+```shell
+$ python3 -m venv venv
+$ source venv/bin/activate
+$ pip install -r requirements.txt
+```
+
+### 4. Выполнить миграции базы данных
+```shell
+$ alembic upgrade head
+```
+
+### 5. Запустить приложение
+```shell
+$ python3 src/main.py
+```
+
+### 4. Успех! С переменными окружения по умолчанию локально доступно:
+
+* [Документация](http://localhost:8080/api/openapi/)
+
+### Запустить тесты (в корне проекта)
+```shell
+$ pytest -vv .
+```
+
+## Файл переменных среды .env
+
+```shell
+# Название проекта в документации 
+PROJECT_NAME="My URL Shorter App"
+# URL базы данных, подробнее: https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls
+PROJECT_DB=postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+PROJECT_HOST=localhost
+PROJECT_PORT=8080
+# Название сервиса для сокращения URL, подробнее: https://pyshorteners.readthedocs.io/en/latest/apis.html
+PROJECT_SHORTENER=clckru 
+```
+#### Примечание. Переменные не обязательны, указаны значения по умолчанию
