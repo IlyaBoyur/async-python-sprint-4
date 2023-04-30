@@ -37,7 +37,7 @@ TEST_IP = "198.51.111.42"
 
 class TestBlacklistAPIs:
     @pytest.fixture
-    async def create_blacklist(self, api_client):
+    async def create_blacklist(self):
         clients = [await BlacklistClientFactory() for _ in range(3)]
         return clients
 
