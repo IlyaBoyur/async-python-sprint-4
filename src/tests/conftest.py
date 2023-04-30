@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -6,10 +8,8 @@ from sqlalchemy.orm import sessionmaker
 from db.db import Base, get_session
 from main import app
 
-SQLALCHEMY_TEST_DB_URL = "sqlite+aiosqlite:///./test.db"
-
 engine = create_async_engine(
-    SQLALCHEMY_TEST_DB_URL,
+    os.getenv("SQLALCHEMY_TEST_DB_URL"),
     echo=True,
     connect_args={"check_same_thread": False},
 )
