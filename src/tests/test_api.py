@@ -30,9 +30,9 @@ SHORT_URL_STATUS_URL = app.url_path_for(
     "read_short_url_use_history", id="{id}"
 )
 SHORT_URL_SHORTEN_URL = app.url_path_for("bulk_create_short_url")
-
 TEST_URL = "https://www.ya.ru"
 TEST_SHORT_URL = "{url}/not-really-short/"
+TEST_IP = "198.51.111.42"
 
 
 class TestBlacklistAPIs:
@@ -43,10 +43,10 @@ class TestBlacklistAPIs:
 
     async def test_blacklist_middleware(self, api_client, mocker):
         await BlacklistClientFactory(
-            host="198.51.255.42", until=datetime.now() + timedelta(hours=1)
+            host=TEST_IP, until=datetime.now() + timedelta(hours=1)
         )
         mock_client = mocker.patch("fastapi.Request.client")
-        mock_client.host = "198.51.255.42"
+        mock_client.host = TEST_IP
 
         response = await api_client.get(BLACKLIST_LIST_URL)
 
@@ -63,7 +63,7 @@ class TestBlacklistAPIs:
 
     async def test_blacklist(self, api_client):
         data = {
-            "host": "198.51.111.42",
+            "host": TEST_IP,
             "until": datetime.now(tz=None).isoformat(),
         }
 
