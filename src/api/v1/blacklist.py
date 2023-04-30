@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.db import get_session
@@ -11,7 +11,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.post("/blacklist")
+@router.post("/blacklist", response_model=BlacklistedClientRead)
 async def blacklist(
     *, db: AsyncSession = Depends(get_session), client: BlacklistedClientCreate
 ) -> BlacklistedClientRead:
@@ -25,7 +25,7 @@ async def blacklist(
     return db_object
 
 
-@router.get("/blacklist")
+@router.get("/blacklist", response_model=list[BlacklistedClientRead])
 async def show_blacklist(
     *, db: AsyncSession = Depends(get_session)
 ) -> list[BlacklistedClientRead]:
@@ -34,10 +34,10 @@ async def show_blacklist(
     return clients
 
 
-@router.delete("/blacklist/{id}")
+@router.delete("/blacklist/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_from_blacklist(
     *, db: AsyncSession = Depends(get_session), id: int
-) -> Response:
+) -> None:
     """Remove host from blacklist"""
     db_object = await blacklist_service.get(db=db, id=id)
     if db_object is None:
@@ -48,4 +48,3 @@ async def remove_from_blacklist(
     host = db_object.host
     await blacklist_service.delete(db=db, id=id)
     logger.info("Host %s removed from blacklist", host)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
