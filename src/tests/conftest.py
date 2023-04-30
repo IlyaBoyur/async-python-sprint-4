@@ -24,6 +24,7 @@ testing_session = sessionmaker(
 
 @pytest.fixture(scope="session")
 def anyio_backend():
+    """Overrides default `trio` backend to drop dependency"""
     return "asyncio"
 
 
