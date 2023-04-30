@@ -17,6 +17,7 @@ app.include_router(base.api_router, prefix="/api/v1")
 for middleware in middlewares:
     app.add_middleware(middleware)
 
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
