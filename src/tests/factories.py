@@ -1,8 +1,7 @@
 import factory
 
+from db.db import async_session
 from models.models import BlacklistedClient, ShortenedURL, ShortenedURLUse
-
-from .conftest import testing_session
 
 
 class AsyncModelFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -34,7 +33,7 @@ class ShortenedURLFactory(AsyncModelFactory):
 
     class Meta:
         model = ShortenedURL
-        sqlalchemy_session = testing_session
+        sqlalchemy_session = async_session
 
 
 class ShortenedURLUseFactory(AsyncModelFactory):
@@ -45,7 +44,7 @@ class ShortenedURLUseFactory(AsyncModelFactory):
 
     class Meta:
         model = ShortenedURLUse
-        sqlalchemy_session = testing_session
+        sqlalchemy_session = async_session
 
 
 class BlacklistClientFactory(AsyncModelFactory):
@@ -54,4 +53,4 @@ class BlacklistClientFactory(AsyncModelFactory):
 
     class Meta:
         model = BlacklistedClient
-        sqlalchemy_session = testing_session
+        sqlalchemy_session = async_session
