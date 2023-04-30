@@ -28,13 +28,13 @@ def anyio_backend():
 
 
 @pytest.fixture(scope="session")
-async def api_client():
+async def api_client(test_db):
     """Create and reuse async client"""
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 async def test_db():
     """Create full db schema before tests and drop after"""
 
