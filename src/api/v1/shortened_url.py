@@ -74,7 +74,7 @@ async def log_url_use(
     return use
 
 
-@router.post("/shorten")
+@router.post("/shorten", response_model=list[ShortenedURLBatchRead])
 async def bulk_create_short_url(
     *,
     db: AsyncSession = Depends(get_session),
@@ -97,7 +97,7 @@ async def bulk_create_short_url(
     return urls_out
 
 
-@router.get("/{id}")
+@router.get("/{id}", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 async def read_short_url(
     *,
     short_url: ShortenedURLRead = Depends(get_short_url),
@@ -115,21 +115,22 @@ async def read_short_url(
     )
 
 
-@router.delete("/{id}")
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def mark_deleted_short_url(
     *,
     db: AsyncSession = Depends(get_session),
     short_url: ShortenedURLRead = Depends(get_short_url),
-) -> Response:
+) -> None:
     """Get URL by ID & mark deleted"""
     await short_url_service.update(
         db=db, db_object=short_url, object_in=ShortenedURLUpdate(deleted=True)
     )
     logger.info(f"Mark {short_url.value} ({short_url.original}) as deleted")
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.get("/{id}/status")
+@router.get(
+    "/{id}/status", response_model=list[ShortURLUseRead] | ShortURLUseReadCut
+)
 async def read_short_url_use_history(
     *,
     db: AsyncSession = Depends(get_session),
@@ -150,7 +151,9 @@ async def read_short_url_use_history(
     return url_uses
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", status_code=status.HTTP_201_CREATED, response_model=ShortenedURLRead
+)
 async def create_short_url(
     *,
     db: AsyncSession = Depends(get_session),
