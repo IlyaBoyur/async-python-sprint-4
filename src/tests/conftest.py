@@ -9,7 +9,7 @@ from db.db import Base, get_session
 from main import app
 
 engine = create_async_engine(
-    os.getenv("SQLALCHEMY_TEST_DB_URL"),
+    os.getenv("PROJECT_DB"),
     echo=True,
     connect_args={"check_same_thread": False},
 )
