@@ -193,7 +193,7 @@ class TestShortURLAPIs:
             SHORT_URL_STATUS_URL.format(id=url.id), params={"full_info": True}
         )
         response_json = response.json()
-        print(response_json)
+
         assert response.status_code == status.HTTP_200_OK
         assert len(response_json) == len(uses)
         for use in response_json:
