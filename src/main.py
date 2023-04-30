@@ -3,12 +3,11 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from api.v1 import base
-from core import config
 from core.config import app_settings
 from middlewares.base import middlewares
 
 app = FastAPI(
-    title=app_settings.app_title,
+    title=app_settings.project_name,
     docs_url="/api/openapi",
     openapi_url="/api/openapi.json",
     default_response_class=ORJSONResponse,
@@ -21,7 +20,7 @@ for middleware in middlewares:
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
-        host=config.PROJECT_HOST,
-        port=config.PROJECT_PORT,
+        host=app_settings.project_host,
+        port=app_settings.project_port,
         reload=True,
     )
