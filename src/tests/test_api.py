@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 from fastapi import status
 
+from db.db import async_session
 from main import app
 from services.services import (
     blacklist_service,
@@ -84,7 +85,7 @@ class TestBlacklistAPIs:
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.content == b""
 
-        async with testing_session() as db:
+        async with async_session() as db:
             ips = await blacklist_service.get_multi(db=db)
         assert to_be_deleted_ip_id not in [ip.id for ip in ips]
 
@@ -117,7 +118,7 @@ class TestShortURLAPIs:
     @pytest.fixture
     async def create_short_url_with_calls(self, api_client, create_short_url):
         url = create_short_url
-        async with testing_session() as db:
+        async with async_session() as db:
             calls_before = await url_use_service.count(
                 db=db, filter=dict(url_id=url.id)
             )
@@ -164,7 +165,7 @@ class TestShortURLAPIs:
         """Deletion only sets URL as deleted"""
         url = create_short_url
         assert not url.deleted
-        async with testing_session() as db:
+        async with async_session() as db:
             urls_before = await short_url_service.count(db=db)
 
         response = await api_client.delete(
@@ -173,7 +174,7 @@ class TestShortURLAPIs:
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.content == b""
-        async with testing_session() as db:
+        async with async_session() as db:
             url_after = await short_url_service.get(db=db, id=url.id)
             urls_after = await short_url_service.count(db=db)
         assert urls_after == urls_before
@@ -212,7 +213,7 @@ class TestShortURLAPIs:
         url, before = create_short_url_with_calls
         await api_client.get(SHORT_URL_DETAIL_URL.format(id=url.id))
 
-        async with testing_session() as db:
+        async with async_session() as db:
             after = await url_use_service.count(
                 db=db, filter=dict(url_id=url.id)
             )
