@@ -23,11 +23,8 @@ from schemas.shortened_url import (
     ShortenedURLRead,
     ShortenedURLUpdate,
 )
-from schemas.user import UserRead
 from services.services import short_url_service, url_use_service
 from services.shortener import generate_short_url
-
-from .user import get_user
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -60,7 +57,6 @@ async def log_url_use(
     host: str = Depends(host_extractor),
     port: int = Depends(port_extractor),
     user_agent: str | None = Header(default=None),
-    user: UserRead | None = Depends(get_user),
     short_url: ShortenedURLRead = Depends(get_short_url),
 ) -> ShortURLUseRead:
     url_use_data = ShortURLUseCreate.parse_obj(
@@ -69,7 +65,7 @@ async def log_url_use(
             "port": port,
             "user_agent": user_agent or "unknown",
             "url_id": short_url.id,
-            "user_id": getattr(user, "id", None),
+            "user_id": None,
         }
     )
     db_object = await url_use_service.create(db=db, object_in=url_use_data)
