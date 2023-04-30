@@ -79,7 +79,7 @@ async def log_url_use(
 
 
 @router.post("/shorten")
-async def batch_create_short_url(
+async def bulk_create_short_url(
     *,
     db: AsyncSession = Depends(get_session),
     urls_in: list[ShortenedURLCreate],
