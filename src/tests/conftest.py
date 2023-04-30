@@ -36,7 +36,7 @@ async def api_client(test_db):
 
 
 @pytest.fixture(scope="session")
-async def test_db():
+async def test_db(anyio_backend):
     """Create full db schema before tests and drop after"""
 
     async def override_get_session():
