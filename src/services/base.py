@@ -117,7 +117,6 @@ class RepositoryDB(
             select(self._model)
             .filter_by(**filter)
             .with_only_columns(*[functions.count()])
-            .order_by(None)
         )
         result = await db.execute(statement=statement)
         return result.scalar()
