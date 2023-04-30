@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import AsyncGenerator
 
 import pytest
 from fastapi import status
@@ -15,7 +16,6 @@ from .factories import (
     BlacklistClientFactory,
     ShortenedURLFactory,
     ShortenedURLUseFactory,
-    testing_session,
 )
 
 pytestmark = pytest.mark.anyio
@@ -40,6 +40,12 @@ class TestBlacklistAPIs:
     async def create_blacklist(self):
         clients = [await BlacklistClientFactory() for _ in range(3)]
         return clients
+
+    @pytest.fixture(autouse=True)
+    async def blacklist_cleanup(self) -> AsyncGenerator[None, None]:
+        yield
+        async with async_session() as db:
+            await blacklist_service.delete(db=db)
 
     async def test_blacklist_middleware(self, api_client, mocker):
         await BlacklistClientFactory(
