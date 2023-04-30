@@ -104,8 +104,9 @@ class RepositoryDB(
         await db.refresh(db_object)
         return db_object
 
-    async def delete(self, db: AsyncSession, *, id: int) -> None:
-        statement = delete(self._model).where(self._model.id == id)
+    async def delete(self, db: AsyncSession, *, id: int | None = None) -> None:
+        filter = {"id": id} if id else {}
+        statement = delete(self._model).filter_by(**filter)
         await db.execute(statement=statement)
         await db.commit()
 
