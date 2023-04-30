@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 from fastapi import status
 
+from main import app
 from services.services import (
     blacklist_service,
     short_url_service,
@@ -18,15 +19,19 @@ from .factories import (
 
 pytestmark = pytest.mark.anyio
 
-BLACKLIST_LIST_URL = "/api/v1/blacklist"
-BLACKLIST_DETAIL_URL = "/api/v1/blacklist/{id}"
-PING_URL = "/api/v1/ping"
+
+BLACKLIST_LIST_URL = app.url_path_for("show_blacklist")
+BLACKLIST_DETAIL_URL = app.url_path_for("remove_from_blacklist", id="{id}")
+PING_URL = app.url_path_for("ping_db")
+SHORT_URL_LIST_URL = app.url_path_for("create_short_url")
+SHORT_URL_DETAIL_URL = app.url_path_for("read_short_url", id="{id}")
+SHORT_URL_STATUS_URL = app.url_path_for(
+    "read_short_url_use_history", id="{id}"
+)
+SHORT_URL_SHORTEN_URL = app.url_path_for("bulk_create_short_url")
+
 TEST_URL = "https://www.ya.ru"
-TEST__SHORT_URL = "{url}/not-really-short/"
-SHORT_URL_LIST_URL = "/api/v1/"
-SHORT_URL_DETAIL_URL = "/api/v1/{id}"
-SHORT_URL_STATUS_URL = "/api/v1/{id}/status"
-SHORT_URL_SHORTEN_URL = "/api/v1/shorten"
+TEST_SHORT_URL = "{url}/not-really-short/"
 
 
 class TestBlacklistAPIs:
@@ -102,7 +107,7 @@ class TestShortURLAPIs:
     async def shortener_mock(self, mocker):
         shortener_mock = mocker.patch(
             "api.v1.shortened_url.generate_short_url",
-            side_effect=lambda url: TEST__SHORT_URL.format(url=url),
+            side_effect=lambda url: TEST_SHORT_URL.format(url=url),
         )
         return shortener_mock
 
