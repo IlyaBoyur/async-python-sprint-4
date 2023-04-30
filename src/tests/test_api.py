@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
 from fastapi import status
@@ -41,6 +41,9 @@ class TestBlacklistAPIs:
         return clients
 
     async def test_blacklist_middleware(self, api_client, mocker):
+        await BlacklistClientFactory(
+            host="198.51.255.42", until=datetime.now() + timedelta(hours=1)
+        )
         mock_client = mocker.patch("fastapi.Request.client")
         mock_client.host = "198.51.255.42"
 
