@@ -22,6 +22,7 @@ BLACKLIST_LIST_URL = "/api/v1/blacklist"
 BLACKLIST_DETAIL_URL = "/api/v1/blacklist/{id}"
 PING_URL = "/api/v1/ping"
 TEST_URL = "https://www.ya.ru"
+TEST__SHORT_URL = "{url}/not-really-short/"
 SHORT_URL_LIST_URL = "/api/v1/"
 SHORT_URL_DETAIL_URL = "/api/v1/{id}"
 SHORT_URL_STATUS_URL = "/api/v1/{id}/status"
@@ -98,6 +99,14 @@ class TestShortURLAPIs:
         return url
 
     @pytest.fixture
+    async def shortener_mock(self, mocker):
+        shortener_mock = mocker.patch(
+            "api.v1.shortened_url.generate_short_url",
+            side_effect=lambda url: TEST__SHORT_URL.format(url=url),
+        )
+        return shortener_mock
+
+    @pytest.fixture
     async def create_short_url_with_calls(self, api_client, create_short_url):
         url = create_short_url
         async with testing_session() as db:
@@ -106,11 +115,7 @@ class TestShortURLAPIs:
             )
         return url, calls_before
 
-    async def test_create(self, api_client, mocker):
-        shortener_mock = mocker.patch(
-            "api.v1.shortened_url.generate_short_url",
-            return_value="https://test_mock.com",
-        )
+    async def test_create(self, api_client, shortener_mock):
         data = {"original_url": TEST_URL}
 
         response = await api_client.post(SHORT_URL_LIST_URL, json=data)
@@ -121,11 +126,12 @@ class TestShortURLAPIs:
         assert "created_at" in response_json
         assert "deleted" in response_json
         assert response_json["original"] == TEST_URL
-        assert response_json["value"] == shortener_mock.return_value
+        assert response_json["value"] == shortener_mock.side_effect(TEST_URL)
+        shortener_mock.assert_called_once_with(TEST_URL)
 
-    async def test_bulk_create(self, api_client):
+    async def test_bulk_create(self, api_client, shortener_mock):
         data = [
-            {"original_url": f"https://url{number}.com" for number in range(3)}
+            {"original_url": f"https://url{number}.com"} for number in range(3)
         ]
         response = await api_client.post(SHORT_URL_SHORTEN_URL, json=data)
         response_json = response.json()
@@ -135,6 +141,8 @@ class TestShortURLAPIs:
         for url in response_json:
             assert "short_id" in url
             assert "short_url" in url
+        for url in data:
+            shortener_mock.assert_any_call(url["original_url"])
 
     async def test_retrieve(self, api_client, create_short_url):
         url = create_short_url
