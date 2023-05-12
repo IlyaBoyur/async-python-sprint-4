@@ -1,0 +1,33 @@
+version: '3'
+services:
+  backend:
+    restart: unless-stopped
+    build:
+      context: ./
+    entrypoint: ./entrypoint.sh
+    command: python3 src/main.py
+    ports:
+      - 8080:8080
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - PROJECT_DB=${PROJECT_DB}
+      - PROJECT_HOST=0.0.0.0
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14.5
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+       - postgresdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+
+volumes:
+  postgresdata:
