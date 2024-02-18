@@ -106,28 +106,17 @@ GET /<shorten-url-id>/status?[full-info]&[max-result=10]&[offset=0]
 ## Локальный запуск приложения  (в корне проекта)
 
 ### 1. Заполнить файл переменных среды .env (см. ниже)
-### 2. Поднять контейнер с базой данных
+### 2. Собрать контейнеры
 ```shell
-$ docker run --rm --name postgres-fastapi -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=collection -d postgres:14.5 
+$ docker compose build
 
 ```
 
-### 3. Подготовить локальное окружение
+### 3. Запустить контейнеры
 ```shell
-$ python3 -m venv venv
-$ source venv/bin/activate
-$ pip install -r requirements.txt
+$ docker compose up -d --remove-orphans
 ```
 
-### 4. Выполнить миграции базы данных
-```shell
-$ alembic upgrade head
-```
-
-### 5. Запустить приложение
-```shell
-$ python3 src/main.py
-```
 
 ### 4. Успех! С переменными окружения по умолчанию локально доступно:
 
